@@ -1,5 +1,7 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse, Http404
+from Blog.models import Post
+
 
 # Create your views here.
 
@@ -9,9 +11,17 @@ def index(request):
 
 
 def post_list(request):
-    return HttpResponse("Post list")
+    posts = Post.published.all()
+    context = {
+        "posts": posts
+    }
+    return render(request, "blog/list.html", context)
 
 
 def post_detail(request, id):
-    return HttpResponse(f"Post{id}")
 
+    post = get_object_or_404(Post, id=id, status=Post.Status.PUBLISHED)
+    context = {
+        "post": post,
+    }
+    return render(request, "blog/detail.html", context)
